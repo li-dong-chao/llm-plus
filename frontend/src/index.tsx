@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 
 import router from './router';
 import './index.css';
+import './shadcn-ui.css';
 import 'normalize.css';
 import store from './store';
 
