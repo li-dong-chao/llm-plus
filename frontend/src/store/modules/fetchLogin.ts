@@ -1,6 +1,6 @@
 import { AppDispatch } from ".."
 import { request } from "@/utils"
-import { setToken } from "./user"
+import { setLoginError, setToken } from "./user"
 
 
 const fetchLogin = (loginForm: {
@@ -9,7 +9,14 @@ const fetchLogin = (loginForm: {
 }) => {
     return async (dispatch: AppDispatch) => {
         const res = await request.postForm('/login/access-token', loginForm)
-        dispatch(setToken(res.data.access_token))
+        if (res.status === 200) {
+            dispatch(setToken(res.data.access_token));
+            return
+        }
+        if (res.status === 401) {
+            dispatch(setLoginError(res.data.detail));
+            return
+        }
     }
 }
 
