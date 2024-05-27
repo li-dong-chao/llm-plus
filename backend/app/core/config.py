@@ -1,6 +1,7 @@
 import secrets
-from typing import Literal, Union, Annotated, Any
-from pydantic import computed_field, PostgresDsn, AnyUrl, BeforeValidator
+from pathlib import Path
+from typing import Literal, Union, Annotated, Any, Optional
+from pydantic import computed_field, PostgresDsn, AnyUrl, BeforeValidator, RedisDsn, AmqpDsn
 from pydantic_core import MultiHostUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -31,9 +32,9 @@ class Settings(BaseSettings):
     # api 路径前缀
     API_V1_STR: str = "/api/v1"
     # 跨域
-    BACKEND_CORS_ORIGINS: Annotated[list[AnyUrl] | str, BeforeValidator(parse_cors)] = (
-        ["http://localhost:3000"]
-    )
+    BACKEND_CORS_ORIGINS: Annotated[list[AnyUrl] | str, BeforeValidator(parse_cors)] = [
+        "http://localhost:3000"
+    ]
 
     #######################################################################
     ##                         鉴权配置                                   ##
@@ -53,9 +54,9 @@ class Settings(BaseSettings):
     # 端口
     POSTGRES_PORT: int = 5432
     # 用户
-    POSTGRES_USER: str
+    POSTGRES_USER: Optional[str] = ""
     # 密码
-    POSTGRES_PASSWORD: str
+    POSTGRES_PASSWORD: Optional[str] = ""
     # 数据库
     POSTGRES_DB: str = ""
 
@@ -72,6 +73,62 @@ class Settings(BaseSettings):
             host=self.POSTGRES_HOST,
             port=self.POSTGRES_PORT,
             path=self.POSTGRES_DB,
+        )
+
+    #######################################################################
+    ##                      redis 配置信息                                ##
+    #######################################################################
+
+    # 地址
+    REDIS_HOST: str
+    # 端口
+    REDIS_PORT: int = 6379
+    # 用户
+    REDIS_USER: Optional[str] = ""
+    # 密码
+    REDIS_PASSWORD: Optional[str] = ""
+    # 数据库
+    REDIS_DB: Optional[str] = ""
+
+    @computed_field
+    @property
+    def REDIS_URL(self) -> RedisDsn:  # pylint: disable=invalid-name
+        """redis 连接 url"""
+        return MultiHostUrl.build(
+            scheme="redis",
+            username=self.REDIS_USER,
+            password=self.REDIS_PASSWORD,
+            host=self.REDIS_HOST,
+            port=self.REDIS_PORT,
+            path=self.REDIS_DB,
+        )
+
+    #######################################################################
+    ##                         mq 配置信息                                ##
+    #######################################################################
+
+    # 地址
+    MQ_HOST: str
+    # 端口
+    MQ_PORT: int = 5672
+    # 用户
+    MQ_USER: Optional[str] = ""
+    # 密码
+    MQ_PASSWORD: Optional[str] = ""
+    # Virtual host
+    MQ_VHOST: str = "/"
+
+    @computed_field
+    @property
+    def MQ_URL(self) -> AmqpDsn:  # pylint: disable=invalid-name
+        """redis 连接 url"""
+        return MultiHostUrl.build(
+            scheme="pyamqp",
+            username=self.MQ_USER,
+            password=self.MQ_PASSWORD,
+            host=self.MQ_HOST,
+            port=self.MQ_PORT,
+            path=self.MQ_VHOST,
         )
 
     #######################################################################
@@ -112,5 +169,22 @@ class Settings(BaseSettings):
             return "/docs"
         return None
 
+    #######################################################################
+    ##                         大模型配置                                  ##
+    #######################################################################
+    OPENAI_API_KEY: str = ""
+    OPENAI_API_BASE: str = ""
+
+    #######################################################################
+    ##                         项目路径配置                                ##
+    #######################################################################
+    ROOT_PATH: Path = Path(__file__).parent.parent.parent
+    # TODO: 项目启动时应该检测目录是否存在，不存在时需要自动创建
+    LOG_PATH: Path = ROOT_PATH.joinpath("logs")
+
 
 settings = Settings()
+
+
+if __name__ == "__main__":
+    print(str(settings.LOG_PATH))

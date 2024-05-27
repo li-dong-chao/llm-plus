@@ -1,6 +1,8 @@
 // 封装 axios
 import axios from "axios"
 
+import { getToken } from "./token";
+
 
 const request = axios.create({
     baseURL: 'http://127.0.0.1:8000/api/v1',
@@ -9,6 +11,11 @@ const request = axios.create({
 
 // 请求拦截器
 request.interceptors.request.use((config) => {
+    // 有token时，自动增加鉴权信息
+    const token = getToken()
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`
+    }
     return config
 }, (error) => {
     return Promise.reject(error)
@@ -18,8 +25,7 @@ request.interceptors.request.use((config) => {
 request.interceptors.response.use((response) => {
     return response
 }, (error) => {
-    // 获取token失败
-    if (error.response.status === 401) {
+    if (error.response.status >= 400 && error.response.status < 500) {
         return error.response
     }
     return Promise.reject(error)

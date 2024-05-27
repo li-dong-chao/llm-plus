@@ -21,7 +21,9 @@ def login_access_token(
     鉴权登录
     """
     user = crud_user.authenticate(
-        session=session, email=form_data.username, password=form_data.password
+        session=session,
+        username_or_email=form_data.username,
+        password=form_data.password,
     )
     if not user:
         raise HTTPException(status_code=401, detail="邮箱或密码错误")

@@ -26,11 +26,24 @@ def get_user_by_email(*, session: Session, email: str) -> User | None:
     return session_user
 
 
-def authenticate(*, session: Session, email: str, password: str) -> User | None:
+def get_user_by_username(*, session: Session, username: str) -> User | None:
+    """
+    根据用户名查询用户
+    """
+    statement = select(User).where(User.username == username)
+    session_user = session.exec(statement).first()
+    return session_user
+
+
+def authenticate(
+    *, session: Session, username_or_email: str, password: str
+) -> User | None:
     """
     用户鉴权
     """
-    db_user = get_user_by_email(session=session, email=email)
+    db_user = get_user_by_email(session=session, email=username_or_email)
+    if not db_user:
+        db_user = get_user_by_username(session=session, username=username_or_email)
     if not db_user:
         return None
     if not verify_password(password, db_user.hashed_password):

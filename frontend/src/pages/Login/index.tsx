@@ -22,11 +22,11 @@ import fetchLogin from '@/store/modules/fetchLogin';
 
 
 const loginSchema = z.object({
-    username: z.string().min(1, {message: "请填写用户名"}).min(
+    username: z.string().min(1, { message: "请填写用户名" }).min(
         2, { message: "用户名长度不能小于2个字符" }).max(
             50, { message: "用户名长度不能大于50个字符" }
         ),
-    password: z.string().min(1, {message: "请填写密码"}).min(
+    password: z.string().min(1, { message: "请填写密码" }).min(
         6, { message: "密码长度不能小于6个字符" }).max(
             50, { message: "密码长度不能大于50个字符" }
         )
@@ -76,7 +76,7 @@ export default function Login() {
             </div>
             <div className="flex items-center justify-center py-12">
 
-                <Card className='w-[400px] h-[500px]'>
+                <Card className='w-[400px]'>
                     <div className="mx-auto grid w-[350px] gap-6">
                         <div className="grid gap-2 text-center">
                             <h1 className="text-3xl font-bold">LLM-PLUS</h1>
@@ -93,11 +93,15 @@ export default function Login() {
                                             name="username"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>用户名</FormLabel>
+                                                    <FormLabel
+                                                        className="text-black"
+                                                    >
+                                                        用户名 / 邮箱
+                                                    </FormLabel>
                                                     <FormControl>
-                                                        <Input placeholder="请输入用户名" {...field} />
+                                                        <Input placeholder="请输入用户名或邮箱" {...field} />
                                                     </FormControl>
-                                                    <FormMessage />
+                                                    <FormMessage/>
                                                 </FormItem>
                                             )}
                                         />
@@ -109,7 +113,8 @@ export default function Login() {
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <div className='flex items-center'>
-                                                        <FormLabel>
+                                                        <FormLabel
+                                                            className="text-black">
                                                             密码
                                                         </FormLabel>
                                                         {/* TODO: 忘记密码尚未实现 */}
@@ -140,10 +145,9 @@ export default function Login() {
                                 手机号登陆
                             </Button>
                         </div>
-                        <div className="mt-4 text-center text-sm">
+                        <div className="mt-2 text-center text-sm mb-6">
                             没有账号？{" "}
-                            {/* TODO: 立即注册尚未实现 */}
-                            <Link to="#" className="underline">
+                            <Link to="/register" className="underline">
                                 立即注册
                             </Link>
                         </div>

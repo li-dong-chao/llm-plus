@@ -10,7 +10,7 @@ class JsonResponse(dict):
         """
         self["detail"] = ""
 
-    def success(self, detail: Optional[str] = "success", **kwargs) -> JSONResponse:
+    def success(self, detail: Optional[str] = "ok", **kwargs) -> JSONResponse:
         """
         成功响应
         """

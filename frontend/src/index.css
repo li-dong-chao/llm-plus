@@ -26,3 +26,29 @@ code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
         monospace;
 }
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: rgb(195, 195, 195);
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(140, 140, 140);
+}
+
+::-moz-scrollbar {
+    width: 6px;
+}
+
+::-moz-scrollbar-thumb {
+    background-color: rgb(195, 195, 195);
+    border-radius: 6px;
+}
+
+::-moz-scrollbar-thumb:hover {
+    background-color: rgb(140, 140, 140);
+}

@@ -1,11 +1,14 @@
+import datetime
 from sqlmodel import Field, SQLModel
+
+from app.utils import get_uuid4
 
 
 class UserBase(SQLModel):
-    email: str = Field(unique=True, index=True)
+    username: str = Field(unique=True, index=True)
+    email: str | None = None
     is_active: bool = True
     is_superuser: bool = False
-    full_name: str | None = None
 
 
 class UserCreate(UserBase):
@@ -13,15 +16,16 @@ class UserCreate(UserBase):
 
 
 class UserRegister(SQLModel):
-    email: str
+    email: str = Field(unique=True, index=True)
     password: str
-    full_name: str | None = None
+    username: str = Field(index=True)
 
 
 class User(UserBase, table=True):
-    id: int | None = Field(default=None, primary_key=True)
+    id: str | None = Field(default_factory=get_uuid4, primary_key=True)
     hashed_password: str
+    create_time: datetime.datetime = Field(default_factory=datetime.datetime.now)
 
 
 class UserPublic(UserBase):
-    id: int
+    id: str
