@@ -12,21 +12,24 @@ const messageListStore = createSlice({
     name: "messageList",
     initialState: initialState,
     reducers: {
-        setMessageList(state, action) {
-            state.messageList = action.payload
+        resetMessageList(state) {
+            state.messageList = []
         },
         appendMessageList(state, action) {
             state.messageList = [
                 ...state.messageList,
                 action.payload
             ]
+        },
+        setMessageList(state, action) {
+            state.messageList = action.payload
         }
     }
 })
 
-const { setMessageList, appendMessageList } = messageListStore.actions;
+const { resetMessageList, appendMessageList, setMessageList } = messageListStore.actions;
 
 const messageListReducer = messageListStore.reducer;
 
-export { setMessageList, appendMessageList };
+export { resetMessageList, appendMessageList, setMessageList };
 export default messageListReducer;

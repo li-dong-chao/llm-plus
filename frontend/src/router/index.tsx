@@ -13,6 +13,16 @@ const router = createBrowserRouter([
         element: <AuthRoute><Layout></Layout></AuthRoute>
     },
     {
+        path: '/c/',
+        element: <AuthRoute><Layout></Layout></AuthRoute>,
+        children: [
+            {
+                path: ':id',
+                element: <AuthRoute><Layout></Layout></AuthRoute>,
+            }
+        ]
+    },
+    {
         path: '/login',
         element: <Login></Login>
     },

@@ -1,8 +1,10 @@
 import { useEffect, useRef } from "react";
-import Message from "@/components/Message";
+import MessageItem from "@/components/MessageItem";
 import { useAppSelector } from "@/hooks"
 
-export default function MessageList() {
+export default function MessageList({ className = "" }: {
+    className?: string
+}) {
 
     const containRef = useRef<HTMLDivElement>(null);
     const messageList = useAppSelector(state => state.messageList.messageList)
@@ -16,10 +18,10 @@ export default function MessageList() {
 
     return (
         <>
-            <div className="overflow-y-scroll h-full py-2" ref={containRef}>
+            <div className={`overflow-y-scroll h-full py-2 ${className}`} ref={containRef}>
                 {
                     messageList.map((item) => {
-                        return <Message
+                        return <MessageItem
                             avatar={item.avatar.toString()}
                             content={item.content.toString()}
                             type={item.type.toString()}

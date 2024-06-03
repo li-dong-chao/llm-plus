@@ -1,14 +1,28 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Copy, ThumbsUp } from "lucide-react"
+import { Copy, ThumbsUp, Check } from "lucide-react"
+import { message } from "antd"
+import { useState } from "react"
 
 
-export default function Message({ avatar, content, type }: {
+export default function MessageItem({ avatar, content, type }: {
     avatar: string,
     content: string,
     type: string
 }) {
+
+    const [copying, setCopying] = useState(false);
+
+    const copy = (text: string) => {
+        setCopying(true);
+        navigator.clipboard.writeText(text);
+        message.success("复制成功");
+        setTimeout(() => {
+            setCopying(false)
+        }, 3000)
+    }
+
     return (
         <>
             {
@@ -30,8 +44,10 @@ export default function Message({ avatar, content, type }: {
                                 variant="ghost"
                                 size="sm"
                                 className="mt-0 rounded-lg"
+                                onClick={() => copy(content)}
                             >
-                                <Copy className="size-4" />
+                                <Copy className={`size-4 ${copying ? "hidden" : ""}`} />
+                                <Check className={`size-4 ${copying ? "" : "hidden"}`} />
                             </Button>
                             <Button
                                 variant="ghost"

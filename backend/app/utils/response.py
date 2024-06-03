@@ -1,5 +1,6 @@
 from typing import Optional
 from fastapi import status
+from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
 
@@ -17,7 +18,9 @@ class JsonResponse(dict):
         self["detail"] = detail
         if kwargs:
             self.update(**kwargs)
-        return JSONResponse(content=self, status_code=status.HTTP_200_OK)
+        return JSONResponse(
+            content=jsonable_encoder(self), status_code=status.HTTP_200_OK
+        )
 
     def error(
         self,
@@ -31,7 +34,7 @@ class JsonResponse(dict):
         self["detail"] = error
         if kwargs:
             self.update(**kwargs)
-        return JSONResponse(content=self, status_code=status_code)
+        return JSONResponse(content=jsonable_encoder(self), status_code=status_code)
 
     def fail(
         self,
@@ -45,7 +48,7 @@ class JsonResponse(dict):
         self["detail"] = detail
         if kwargs:
             self.update(**kwargs)
-        return JSONResponse(content=self, status_code=status_code)
+        return JSONResponse(content=jsonable_encoder(self), status_code=status_code)
 
 
 json_response = JsonResponse()

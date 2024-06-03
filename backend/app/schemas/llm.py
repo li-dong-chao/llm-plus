@@ -15,3 +15,12 @@ class ConversationMessage(BaseModel):
         if bot_id is None and conversation_id is None:
             raise ValueError("One of bot_id or conversation_id must be provided")
         return values
+
+
+class RenameTitle(BaseModel):
+    conversation_id: str
+    title: str
+
+
+class ConversationId(BaseModel):
+    conversation_id: str

@@ -1,9 +1,9 @@
-from sqlmodel import Session
+from sqlmodel import Session, select, col, desc
 
 from app.models.conversation import ConversationCreate, Conversation
 from app.models.user_conversation import UserConversationCreate, UserConversation
 from app.models.user import User
-from app.utils import get_uuid4
+from app.utils import get_uuid4, FoundNothingError
 
 
 def create_conversation(
@@ -22,3 +22,51 @@ def create_conversation(
     session.commit()
     session.refresh(conversation)
     return conversation
+
+
+def get_conversations_by_user(session: Session, user: User) -> list[Conversation]:
+    """根据用户查询历史对话记录"""
+    sql = (
+        select(Conversation)
+        .where(
+            col(Conversation.id).in_(
+                select(UserConversation.conversation_id).where(
+                    UserConversation.user_id == user.id
+                )
+            )
+        )
+        .order_by(desc(Conversation.create_time))
+    )
+    db_user_conversations = session.exec(sql).all()
+    return db_user_conversations
+
+
+def update_conversation_title(
+    session: Session, user: User, conversation_id: str, title: str
+) -> Conversation:
+    """更新conversation的title"""
+    # 先校验一下是不是存在以及是不是当前用户的
+    sql = select(UserConversation).where(
+        UserConversation.conversation_id == conversation_id
+    )
+    user_conversation = session.exec(sql).first()
+    if user_conversation is None:
+        return None
+    if user_conversation.user_id != user.id:
+        raise PermissionError
+    sql = select(Conversation).where(Conversation.id == conversation_id)
+    conversation = session.exec(sql).first()
+    if conversation:
+        conversation.title = title
+        session.commit()
+        session.refresh(conversation)
+    return conversation
+
+
+def delete_conversation_by_id(session: Session, conversation_id: str) -> None:
+    """删除conversation"""
+    sql = select(Conversation).where(Conversation.id == conversation_id)
+    conversation = session.exec(sql).first()
+    if conversation is None:
+        raise FoundNothingError
+    session.delete(conversation)
