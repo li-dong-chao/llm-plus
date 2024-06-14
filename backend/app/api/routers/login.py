@@ -7,13 +7,13 @@ from fastapi.exceptions import HTTPException
 from app.core import security
 from app.api.deps import SessionDep
 from app.core.config import settings
-from app.models.token import Token
+from app.schemas.token import Token
 from app.crud import user as crud_user
 
 router = APIRouter()
 
 
-@router.post("/login/access-token")
+@router.post("/login/access-token", response_class=Token)
 def login_access_token(
     session: SessionDep, form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
 ) -> Token:
@@ -26,7 +26,7 @@ def login_access_token(
         password=form_data.password,
     )
     if not user:
-        raise HTTPException(status_code=401, detail="邮箱或密码错误")
+        raise HTTPException(status_code=401, detail="邮箱、用户名或密码错误")
     if not user.is_active:
         raise HTTPException(status_code=401, detail="非活跃用户")
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)

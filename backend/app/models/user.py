@@ -1,31 +1,22 @@
-import datetime
 from sqlmodel import Field, SQLModel
 
-from app.utils import get_uuid4
+from app.models.base import Base
 
 
-class UserBase(SQLModel):
+class _UserBase(SQLModel):
     username: str = Field(unique=True, index=True)
-    email: str | None = None
+    email: str | None = Field(unique=True)
     is_active: bool = True
     is_superuser: bool = False
 
 
-class UserCreate(UserBase):
-    password: str
-
-
-class UserRegister(SQLModel):
-    email: str = Field(unique=True, index=True)
-    password: str
-    username: str = Field(index=True)
-
-
-class User(UserBase, table=True):
-    id: str | None = Field(default_factory=get_uuid4, primary_key=True)
+class User(_UserBase, Base, table=True):
     hashed_password: str
-    create_time: datetime.datetime = Field(default_factory=datetime.datetime.now)
 
 
-class UserPublic(UserBase):
+class UserCreate(_UserBase):
+    password: str
+
+
+class UserPublic(_UserBase):
     id: str

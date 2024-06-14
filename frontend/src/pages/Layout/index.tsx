@@ -41,6 +41,7 @@ import HistoryList from "@/components/HistoryList"
 
 import {
     Drawer,
+    DrawerClose,
     DrawerContent,
     DrawerTitle,
     DrawerTrigger,
@@ -61,6 +62,7 @@ export default function Layout() {
     const dispatch = useAppDispatch();
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
     const [showMessage, setShowMessage] = useState(false);
+    const [conversationId, setConversationId] = useState(null);
     const params = useParams();
     const id = params.id;
 
@@ -88,14 +90,18 @@ export default function Layout() {
             }
             dispatch(appendMessageList(message))
             form.reset({ content: "" })
-            const res = await request.post('/chatbot', { message: values.content, bot_id: "0" })
+            console.log(conversationId)
+            const res = conversationId
+                ? await request.post('/chatbot', { message: values.content, conversation_id: conversationId })
+                : await request.post('/chatbot', { message: values.content, bot_id: "0" })
             if (res.status === 200) {
                 const respMessage: messageType = {
                     id: nanoid(),
                     content: res.data.data,
                     avatar: "https://github.com/shadcn.png",
-                    type: "assistant"
+                    type: "ai"
                 }
+                setConversationId(res.data.conversation_id)
                 dispatch(appendMessageList(respMessage))
             }
             else {
@@ -128,19 +134,23 @@ export default function Layout() {
     }
 
     const clearMessage = () => {
+        setConversationId(null)
         dispatch(resetMessageList())
         setShowMessage(false)
     }
 
     useEffect(() => {
         const fetchData = async () => {
-            const res = await request.post('/messages', { conversation_id: id });
-            if (res.status === 200) {
-                dispatch(resetMessageList())
-                console.log(res.data.data)
-                dispatch(setMessageList(res.data.data))
-            } else {
-                antdMessage.error("获取对话失败")
+            if (id) {
+                const res = await request.post('/messages', { conversation_id: id });
+                if (res.status === 200) {
+                    dispatch(resetMessageList())
+                    console.log(res.data.data)
+                    dispatch(setMessageList(res.data.data))
+                    setShowMessage(true)
+                } else {
+                    antdMessage.error("获取对话失败")
+                }
             }
         }
         fetchData();
@@ -200,7 +210,9 @@ export default function Layout() {
                                         <DrawerTitle className="mx-auto my-4">
                                             历史对话
                                         </DrawerTitle>
-                                        <HistoryList className="mt-4" historyList={historyList} />
+                                        <DrawerClose asChild>
+                                            <HistoryList className="mt-4" historyList={historyList} />
+                                        </DrawerClose>
                                     </DrawerContent>
                                 </Drawer>
                             </TooltipTrigger>

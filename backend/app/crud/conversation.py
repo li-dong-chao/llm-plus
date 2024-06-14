@@ -41,6 +41,12 @@ def get_conversations_by_user(session: Session, user: User) -> list[Conversation
     return db_user_conversations
 
 
+def get_conversation_by_id(session: Session, conversation_id: str) -> Conversation | None:
+    sql = select(Conversation).where(Conversation.id == conversation_id)
+    conversation = session.exec(sql).first()
+    return conversation
+
+
 def update_conversation_title(
     session: Session, user: User, conversation_id: str, title: str
 ) -> Conversation:

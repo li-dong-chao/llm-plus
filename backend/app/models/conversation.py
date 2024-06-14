@@ -1,18 +1,17 @@
-import datetime
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel
 
-from app.utils import get_uuid4
+from app.models.base import Base
+from app.schemas.conversation import ConversationType
 
 
-class ConversationBase(SQLModel):
+class _ConversationBase(SQLModel):
     title: str
-    bot_id: str
-    depend_id: str | None = None
+    type: ConversationType
 
 
-class ConversationCreate(ConversationBase):
-    create_time: datetime.datetime = Field(default_factory=datetime.datetime.now)
+class Conversation(_ConversationBase, Base, table=True):
+    pass
 
 
-class Conversation(ConversationCreate, table=True):
-    id: str | None = Field(default_factory=get_uuid4, primary_key=True)
+class ConversationCreate(_ConversationBase):
+    pass

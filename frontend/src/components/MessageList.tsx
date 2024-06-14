@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import MessageItem from "@/components/MessageItem";
 import { useAppSelector } from "@/hooks"
+import { nanoid } from "nanoid";
 
 export default function MessageList({ className = "" }: {
     className?: string
@@ -22,10 +23,10 @@ export default function MessageList({ className = "" }: {
                 {
                     messageList.map((item) => {
                         return <MessageItem
-                            avatar={item.avatar.toString()}
+                            avatar={item.avatar ? item.avatar.toString() : ""}
                             content={item.content.toString()}
                             type={item.type.toString()}
-                            key={item.id.toString()}
+                            key={item.id ? item.id.toString() : nanoid()}
                         />
                     })
                 }

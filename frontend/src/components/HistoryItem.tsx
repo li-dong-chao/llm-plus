@@ -18,7 +18,7 @@ export default function HistoryItem({ title, id }: { title: string, id: string }
                 <span>
                     <ScrollText size={20} className="ml-4" />
                 </span>
-                <span className="w-5/6 ml-2 mr-4 text-xl">
+                <span className="w-5/6 ml-2 mr-4 text-base">
                     {title}
                 </span>
                 <span className="hidden group-hover:flex items-center justify-end gap-2">

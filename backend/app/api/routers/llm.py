@@ -8,6 +8,7 @@ from app.crud.conversation import (
     get_conversations_by_user,
     update_conversation_title,
     delete_conversation_by_id,
+    get_conversation_by_id,
 )
 from app.models.conversation import ConversationCreate
 from app.utils import json_response, FoundNothingError
@@ -26,21 +27,24 @@ def chatbot(
     # 没有传 conversation_id 需要先创建
     conversation_id = payload.conversation_id
     if not conversation_id:
-        title = "title"  # TODO: 考虑标题如何生成
+        title = payload.message
         conversation_create = ConversationCreate(title=title, bot_id=payload.bot_id)
         conversation = create_conversation(session, conversation_create, user)
         conversation_id = conversation.id
-    # ai_message = chat_bot.chat(
-    #     input_message=payload.message, conversation_id=conversation_id
-    # )
-    return json_response.success(
-        data="test chat message", conversation_id=conversation_id
+    ai_message = chat_bot.chat(
+        input_message=payload.message, conversation_id=conversation_id
     )
+    return json_response.success(data=ai_message, conversation_id=conversation_id)
 
 
 @router.post("/messages")
-def get_messages(*, _: CurrentUser, payload: ConversationId):
+def get_messages(*, session: SessionDep, _: CurrentUser, payload: ConversationId):
     """查询对话信息"""
+    conversation = get_conversation_by_id(
+        session=session, conversation_id=payload.conversation_id
+    )
+    if conversation is None:
+        return json_response.fail(detail="对话不存在", status_code=404)
     messages = [
         {"type": item.type, "content": item.content, "create_time": item.create_time}
         for item in chat_bot.get_history(payload.conversation_id)
@@ -77,9 +81,7 @@ def rename(*, user: CurrentUser, session: SessionDep, payload: RenameTitle):
 
 
 @router.delete("/conversation")
-def delete_conversation(
-    *, _: CurrentUser, session: SessionDep, conversation_id: str
-):
+def delete_conversation(*, _: CurrentUser, session: SessionDep, conversation_id: str):
     """删除一个聊天记录"""
     try:
         delete_conversation_by_id(session=session, conversation_id=conversation_id)

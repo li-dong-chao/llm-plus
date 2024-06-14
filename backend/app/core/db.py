@@ -7,13 +7,10 @@ from app.core.config import settings
 # 否则将不会在数据库中创建对应的数据表
 from sqlmodel import SQLModel
 from app.models.user import User
-from app.models.bot import Bot
-from app.models.conversation import Conversation
-from app.models.file import File
-from app.models.conversation_message import ConversationMessage
-from app.models.user_conversation import UserConversation
 from app.models.message import Message
-from app.models.tool import Tool
+from app.models.conversation import Conversation
+from app.models.relations.conversation_message import ConversationMessage
+from app.models.relations.user_conversation import UserConversation
 
 
 # 数据库 engine

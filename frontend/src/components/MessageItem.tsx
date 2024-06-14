@@ -26,7 +26,7 @@ export default function MessageItem({ avatar, content, type }: {
     return (
         <>
             {
-                type.toString() === "assistant" ?
+                type.toString() === "ai" ?
                     <div className="hover:bg-blue-100 hover:shadow-md rounded-2xl  pt-2">
                         <div className="flex justify-start px-4 mt-2">
                             <div>
