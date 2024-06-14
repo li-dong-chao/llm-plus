@@ -1,7 +1,7 @@
 from typing import List
 from sqlmodel import Session, select, desc, col
 
-from app.models.conversation_message import (
+from app.models.relations.conversation_message import (
     ConversationMessage,
     ConversationMessageCreate,
 )

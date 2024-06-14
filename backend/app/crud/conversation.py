@@ -1,7 +1,10 @@
 from sqlmodel import Session, select, col, desc
 
 from app.models.conversation import ConversationCreate, Conversation
-from app.models.user_conversation import UserConversationCreate, UserConversation
+from app.models.relations.user_conversation import (
+    UserConversationCreate,
+    UserConversation,
+)
 from app.models.user import User
 from app.utils import get_uuid4, FoundNothingError
 
@@ -41,7 +44,9 @@ def get_conversations_by_user(session: Session, user: User) -> list[Conversation
     return db_user_conversations
 
 
-def get_conversation_by_id(session: Session, conversation_id: str) -> Conversation | None:
+def get_conversation_by_id(
+    session: Session, conversation_id: str
+) -> Conversation | None:
     sql = select(Conversation).where(Conversation.id == conversation_id)
     conversation = session.exec(sql).first()
     return conversation

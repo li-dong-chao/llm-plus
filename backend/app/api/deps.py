@@ -3,7 +3,7 @@ from typing import Annotated
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
+from jose import JWTError, jwt, ExpiredSignatureError
 from pydantic import ValidationError
 from sqlmodel import Session
 
@@ -39,16 +39,18 @@ def get_current_user(session: SessionDep, token: TokenDep) -> User:
             token, settings.SECRET_KEY, algorithms=[security.ALGORITHM]
         )
         token_data = TokenPayload(**payload)
+    except ExpiredSignatureError:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Token已过期")
     except (JWTError, ValidationError):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Could not validate credentials",
+            detail="token验证失败，请重新登录",
         )
     user = session.get(User, token_data.sub)
     if not user:
-        raise HTTPException(status_code=404, detail="用户不存在")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="用户不存在")
     if not user.is_active:
-        raise HTTPException(status_code=400, detail="非活跃用户")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="非活跃用户")
     return user
 
 
