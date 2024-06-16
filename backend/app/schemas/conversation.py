@@ -2,6 +2,6 @@ from enum import Enum
 
 
 class ConversationType(str, Enum):
-    CHAT = "chat"
+    CHAT = "chatbot"
     RAG = "rag"
     AGENT = "agent"

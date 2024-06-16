@@ -28,7 +28,7 @@ def chatbot(
     conversation_id = payload.conversation_id
     if not conversation_id:
         title = payload.message
-        conversation_create = ConversationCreate(title=title, bot_id=payload.bot_id)
+        conversation_create = ConversationCreate(title=title, type="chatbot")
         conversation = create_conversation(session, conversation_create, user)
         conversation_id = conversation.id
     ai_message = chat_bot.chat(

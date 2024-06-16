@@ -13,7 +13,7 @@ from app.crud import user as crud_user
 router = APIRouter()
 
 
-@router.post("/login/access-token", response_class=Token)
+@router.post("/login/access-token")
 def login_access_token(
     session: SessionDep, form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
 ) -> Token:

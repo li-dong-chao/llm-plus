@@ -1,7 +1,14 @@
 import secrets
 from pathlib import Path
 from typing import Literal, Union, Annotated, Any, Optional
-from pydantic import computed_field, PostgresDsn, AnyUrl, BeforeValidator, RedisDsn, AmqpDsn
+from pydantic import (
+    computed_field,
+    PostgresDsn,
+    AnyUrl,
+    BeforeValidator,
+    RedisDsn,
+    AmqpDsn,
+)
 from pydantic_core import MultiHostUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 

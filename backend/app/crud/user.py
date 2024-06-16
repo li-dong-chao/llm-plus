@@ -1,4 +1,5 @@
 from sqlmodel import Session, select
+from sqlalchemy import func
 
 from app.models.user import User, UserCreate
 from app.core.security import get_password_hash, verify_password
@@ -30,6 +31,7 @@ def get_user_by_username(*, session: Session, username: str) -> User | None:
     """
     根据用户名查询用户
     """
+    # TODO: 用户名大小写敏感，LI 和 li 为不同用户，是否合理？
     statement = select(User).where(User.username == username)
     session_user = session.exec(statement).first()
     return session_user

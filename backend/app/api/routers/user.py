@@ -27,6 +27,14 @@ def _validate_username(username: str) -> Tuple[bool, str]:
     return True, "用户名合法"
 
 
+def _validate_email(email: str) -> Tuple[bool, str]:
+    """验证邮箱"""
+    if not re.match(r"^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$", email):
+        return False, "邮箱格式错误"
+
+    return True, "邮箱合法"
+
+
 @router.post("/register", response_model=UserPublic)
 def create_new_user(*, session: SessionDep, user_in: UserCreate) -> Any:
     """
@@ -34,6 +42,10 @@ def create_new_user(*, session: SessionDep, user_in: UserCreate) -> Any:
     """
     # 校验用户名格式
     check_pass, detail = _validate_username(username=user_in.username)
+    if not check_pass:
+        return json_response.fail(detail=detail)
+    # 校验邮箱格式
+    check_pass, detail = _validate_email(email=user_in.email)
     if not check_pass:
         return json_response.fail(detail=detail)
     # 校验邮箱是否已注册
