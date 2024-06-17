@@ -1,6 +1,6 @@
-import { AppDispatch } from ".."
+import { AppDispatch } from "@/store"
 import { request } from "@/utils"
-import { setLoginError, setToken } from "./user"
+import { setLoginError, setToken } from "../store/modules/user"
 
 
 const fetchLogin = (loginForm: {

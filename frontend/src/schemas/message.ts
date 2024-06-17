@@ -1,9 +1,8 @@
 
 interface messageType {
-    id: string
-    avatar: string,
+    id: string,
+    type: string,
     content: string,
-    type: string
 }
 
 

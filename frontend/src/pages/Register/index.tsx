@@ -33,8 +33,15 @@ const registerSchema = z.object({
     password: z.string().min(1, { message: "请填写密码" }).min(
         6, { message: "密码长度不能小于6个字符" }).max(
             50, { message: "密码长度不能大于50个字符" }
+        ),
+    confirmPassword: z.string().min(1, { message: "请填写密码" }).min(
+        6, { message: "密码长度不能小于6个字符" }).max(
+            50, { message: "密码长度不能大于50个字符" }
         )
-})
+}).refine(data => data.password === data.confirmPassword, {
+    message: '两次密码输入不一致',
+    path: ['confirmPassword'], // 将错误信息关联到 confirmPassword 字段
+});
 
 
 export default function Register() {
@@ -46,12 +53,13 @@ export default function Register() {
         defaultValues: {
             username: "",
             email: "",
-            password: ""
+            password: "",
+            confirmPassword: ""
         }
     })
 
     const onSubmit = async (values: z.infer<typeof registerSchema>) => {
-        const res = await request.post('/register', values)
+        const res = await request.post('/user/register', values)
         if (res.status === 200) {
             message.success("注册成功，请登录")
             navigate("/login");
@@ -112,6 +120,21 @@ export default function Register() {
                                             <FormLabel>密码</FormLabel>
                                             <FormControl>
                                                 <Input type="password" placeholder="请输入密码" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+                            <div className='grid gap-2 mt-4'>
+                                <FormField
+                                    control={form.control}
+                                    name="confirmPassword"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>确认密码</FormLabel>
+                                            <FormControl>
+                                                <Input type="password" placeholder="请确认密码" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>

@@ -24,7 +24,7 @@ import { Form, FormField, FormControl, FormItem } from "@/components/ui/form"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import MessageList from "@/components/MessageList"
-import { appendMessageList, resetMessageList, setMessageList } from "@/store/modules/messageList"
+import { addMessage, setConversation, clearConversation } from "@/store/modules/conversation"
 import { useAppDispatch } from "@/hooks"
 import { messageType } from "@/schemas"
 import { nanoid } from 'nanoid';
@@ -85,10 +85,9 @@ export default function Layout() {
             const message: messageType = {
                 id: nanoid(),
                 content: values.content,
-                avatar: "https://github.com/shadcn.png",
                 type: "human"
             }
-            dispatch(appendMessageList(message))
+            dispatch(addMessage(message))
             form.reset({ content: "" })
             console.log(conversationId)
             const res = conversationId
@@ -98,11 +97,10 @@ export default function Layout() {
                 const respMessage: messageType = {
                     id: nanoid(),
                     content: res.data.data,
-                    avatar: "https://github.com/shadcn.png",
                     type: "ai"
                 }
                 setConversationId(res.data.conversation_id)
-                dispatch(appendMessageList(respMessage))
+                dispatch(addMessage(respMessage))
             }
             else {
                 antdMessage.error(res.data.detail)
@@ -135,7 +133,7 @@ export default function Layout() {
 
     const clearMessage = () => {
         setConversationId(null)
-        dispatch(resetMessageList())
+        dispatch(clearConversation())
         setShowMessage(false)
     }
 
@@ -144,9 +142,9 @@ export default function Layout() {
             if (id) {
                 const res = await request.post('/messages', { conversation_id: id });
                 if (res.status === 200) {
-                    dispatch(resetMessageList())
+                    dispatch(clearConversation())
                     console.log(res.data.data)
-                    dispatch(setMessageList(res.data.data))
+                    dispatch(setConversation(res.data.data))
                     setShowMessage(true)
                 } else {
                     antdMessage.error("获取对话失败")

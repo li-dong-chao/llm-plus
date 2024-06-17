@@ -1,12 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit'
 import userReducer from './modules/user'
-import messageListReducer from './modules/messageList'
+import historyReducer from './modules/history'
+import conversationReducer from './modules/conversation'
 
 
 const store = configureStore({
     reducer: {
         user: userReducer,
-        messageList: messageListReducer
+        history: historyReducer,
+        conversation: conversationReducer
     }
 })
 

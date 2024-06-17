@@ -18,7 +18,7 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 import { useAppDispatch, useAppSelector } from '@/hooks';
-import fetchLogin from '@/store/modules/fetchLogin';
+import { fetchLogin } from '@/utils';
 
 
 const loginSchema = z.object({
@@ -101,7 +101,7 @@ export default function Login() {
                                                     <FormControl>
                                                         <Input placeholder="请输入用户名或邮箱" {...field} />
                                                     </FormControl>
-                                                    <FormMessage/>
+                                                    <FormMessage />
                                                 </FormItem>
                                             )}
                                         />
