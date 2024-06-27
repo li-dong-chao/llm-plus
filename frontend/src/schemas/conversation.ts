@@ -1,4 +1,9 @@
 import { messageType } from "./message";
 
 
-export type conversationType = messageType[]
+interface conversationType {
+    title: string,
+    messages: messageType[]
+}
+
+export type { conversationType }

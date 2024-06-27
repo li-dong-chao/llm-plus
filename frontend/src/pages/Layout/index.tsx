@@ -10,9 +10,6 @@ import {
     DatabaseZap,
     Boxes,
     RotateCw,
-    ChevronDown,
-    PencilLine,
-    Trash2
 } from "lucide-react"
 
 import { z } from "zod"
@@ -23,8 +20,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Form, FormField, FormControl, FormItem } from "@/components/ui/form"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import MessageList from "@/components/MessageList"
-import { addMessage, setConversation, clearConversation } from "@/store/modules/conversation"
+import Conversation from "@/components/Conversation"
+import { addMessage, setConversation, clearConversation, setConversationTitle } from "@/store/modules/conversation"
 import { useAppDispatch } from "@/hooks"
 import { messageType } from "@/schemas"
 import { nanoid } from 'nanoid';
@@ -47,7 +44,6 @@ import {
     DrawerTrigger,
 } from "@/components/ui/drawer"
 import ExampleList from "@/components/Example"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useParams } from "react-router-dom"
 
 const messageSchema = z.object({
@@ -89,10 +85,13 @@ export default function Layout() {
             }
             dispatch(addMessage(message))
             form.reset({ content: "" })
-            console.log(conversationId)
-            const res = conversationId
-                ? await request.post('/chatbot', { message: values.content, conversation_id: conversationId })
-                : await request.post('/chatbot', { message: values.content, bot_id: "0" })
+            let res = null
+            if (conversationId) {
+                res = await request.post('/llm/chatbot', { message: values.content, conversation_id: conversationId })
+            } else {
+                res = await request.post('/llm/chatbot', { message: values.content })
+                dispatch(setConversationTitle(values.content))
+            }
             if (res.status === 200) {
                 const respMessage: messageType = {
                     id: nanoid(),
@@ -293,31 +292,9 @@ export default function Layout() {
                 </div>
                 <div className="h-screen w-3/5 mx-auto">
                     <div className="w-full h-screen grid grid-rows-12">
-                        <div className="row-start-1 row-end-10 grid grid-rows-8">
-                            <div className="row-start-1 row-end-1 flex justify-center items-center">
-                                <div className={`${showMessage ? "" : "hidden"}`}>
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                            <Button variant="ghost">
-                                                未命名对话
-                                                <ChevronDown size={16} className="ml-2" />
-                                            </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-full grid grid-rows-2 gap-2">
-                                            <Button variant="ghost">
-                                                <PencilLine size={16} className="mr-2" />
-                                                修改名称
-                                            </Button>
-                                            <Button variant="ghost" className="text-red-400 hover:text-red-400">
-                                                <Trash2 size={16} className="mr-2" />
-                                                删除对话
-                                            </Button>
-                                        </PopoverContent>
-                                    </Popover>
-
-                                </div>
-                            </div>
-                            <div className="row-start-2 row-end-9">
+                        <div className="row-start-1 row-end-10">
+                            <Conversation className={`${showMessage ? "" : "hidden"} h-full`} />
+                            <div className="pt-28 h-full">
                                 <div className={`h-full ${showMessage ? "hidden" : ""}`} >
                                     <h1 className="font-serif font-bold text-center">
                                         LLM-PLUS
@@ -325,7 +302,6 @@ export default function Layout() {
                                     <ExampleList sendMessage={sendMessage} />
                                 </div>
 
-                                <MessageList className={`${showMessage ? "" : "hidden"}`} />
                             </div>
                         </div>
                         <div className="row-start-10 row-end-13 flex items-end justify-center pb-8">

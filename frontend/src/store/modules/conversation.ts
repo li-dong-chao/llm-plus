@@ -5,7 +5,10 @@ import { conversationType } from "@/schemas"
 const initialState: {
     conversation: conversationType
 } = {
-    conversation: []
+    conversation: {
+        title: "未命名对话",
+        messages: []
+    }
 }
 
 const conversationStore = createSlice({
@@ -15,21 +18,33 @@ const conversationStore = createSlice({
         setConversation(state, action) {
             state.conversation = action.payload
         },
+        setConversationTitle(state, action) {
+            state.conversation = {
+                title: action.payload,
+                messages: state.conversation.messages,
+            }
+        },
         addMessage(state, action) {
-            state.conversation = [
-                ...state.conversation,
-                action.payload
-            ]
+            state.conversation = {
+                title: state.conversation.title,
+                messages: [
+                    ...state.conversation.messages,
+                    action.payload
+                ]
+            }
         },
         clearConversation(state) {
-            state.conversation = []
+            state.conversation = {
+                title: "未命名对话",
+                messages: []
+            }
         }
     }
 })
 
-const { setConversation, addMessage, clearConversation } = conversationStore.actions;
+const { setConversation, addMessage, clearConversation, setConversationTitle } = conversationStore.actions;
 
 const conversationReducer = conversationStore.reducer;
 
-export { setConversation, addMessage, clearConversation };
+export { setConversation, addMessage, clearConversation, setConversationTitle };
 export default conversationReducer;

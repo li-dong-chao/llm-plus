@@ -6,7 +6,7 @@ import { message } from "antd"
 import { useState } from "react"
 
 
-export default function MessageItem({ avatar, content, type }: {
+export default function Message({ avatar, content, type }: {
     avatar: string,
     content: string,
     type: string
